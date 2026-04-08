@@ -6,11 +6,36 @@ public class Login {
     private String surname;
     
     public boolean checkUserName(String username) {
-        return false;
+        if (username.length() > 5) {
+            return false;
+        }
+        if (!username.contains("_")) {
+            return false;
+        }
+        return true;
     }
     
     public boolean checkPassword(String password) {
-        return false;
+        if (password.length() < 8) {
+            return false;
+        }
+        
+        boolean capital = false;
+        boolean number = false;
+        boolean special = false;
+        
+        for (int i = 0; i < password.length(); i++) {
+            char ch = password.charAt(i);
+            
+            if (Character.isUpperCase(ch)) {
+                capital = true;
+            } else if (Character.isDigit(ch)) {
+                number = true;
+            } else if (!Character.isLetterOrDigit(ch)) {
+                special = true;
+            }
+        }
+        return capital && number && special;
     }
     
     public boolean checkCellNo(String cellNo) {
