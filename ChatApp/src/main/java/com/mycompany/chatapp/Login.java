@@ -43,7 +43,23 @@ public class Login {
     }
     
     public String userReg(String name, String surname, String username, String password, String cellNo) {
-        return "";
+        if (!checkUserName(username)) {
+            return "Username is not coreectly formatted. Please ensure that the username contains an underscore and is  ot longer than five letters.";
+        }
+        if (!checkPassword(password)) {
+            return "Password is not formatted correctly. Please ensure your password contains a capital letter, a number, a special character and is at least 8 characters in lenght.";
+        }
+        if (!checkCellNo(cellNo)) {
+            return "Please ensure that your cellphone number is the correct lenght and caontains the international code (+27)";
+        }
+        
+        this.cellNo = cellNo;
+        this.name = name;
+        this.password = password;
+        this.surname = surname;
+        this.username = username;
+        
+        return "Account creation is successful!";
     }
     
     public boolean login(String username, String password) {
