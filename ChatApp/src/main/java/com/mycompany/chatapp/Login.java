@@ -63,10 +63,18 @@ public class Login {
     }
     
     public boolean login(String username, String password) {
-        return false;
+       if (this.username == null) {
+           return false;
+       }
+       return this.username.equals(username) && this.password.equals(password);
     }
     
     public String returnLogin(String username, String password) {
-        return "";
+        if (login(username, password)) {
+            return "Welcome" + name + surname + "It is an honour to have you again.";
+        }
+        else {
+            return "Username or password  incorrect. Please try again.";
+        }
     }
 }
