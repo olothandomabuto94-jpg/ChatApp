@@ -39,7 +39,7 @@ public class Login {
     }
     
     public boolean checkCellNo(String cellNo) {
-        return false;
+        return cellNo.matches("\\+27\\d(9)");
     }
     
     public String userReg(String name, String surname, String username, String password, String cellNo) {
