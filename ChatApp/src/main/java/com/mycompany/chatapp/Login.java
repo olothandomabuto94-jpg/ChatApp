@@ -1,80 +1,82 @@
+package com.mycompany.chatapp;
+
 public class Login {
+
     private String username;
     private String password;
-    private String cellNo;
+    private String cellNumber;
     private String name;
     private String surname;
-    
+
+    // 1
     public boolean checkUserName(String username) {
-        if (username.length() > 5) {
-            return false;
-        }
-        if (!username.contains("_")) {
-            return false;
-        }
-        return true;
+        return username.length() <= 5 && username.contains("_");
     }
-    
-    public boolean checkPassword(String password) {
-        if (password.length() < 8) {
-            return false;
-        }
-        
+
+    // 2
+    public boolean checkPasswordComplexity(String password) {
+
+        if (password.length() < 8) return false;
+
         boolean capital = false;
         boolean number = false;
         boolean special = false;
-        
+
         for (int i = 0; i < password.length(); i++) {
             char ch = password.charAt(i);
-            
-            if (Character.isUpperCase(ch)) {
-                capital = true;
-            } else if (Character.isDigit(ch)) {
-                number = true;
-            } else if (!Character.isLetterOrDigit(ch)) {
-                special = true;
-            }
+
+            if (Character.isUpperCase(ch)) capital = true;
+            else if (Character.isDigit(ch)) number = true;
+            else if (!Character.isLetterOrDigit(ch)) special = true;
         }
+
         return capital && number && special;
     }
-    
-    public boolean checkCellNo(String cellNo) {
-        return cellNo.matches("\\+27\\d(9)");
+
+    // 3
+    public boolean checkCellPhoneNumber(String cellNumber) {
+        return cellNumber.matches("\\+27\\d{9}");
     }
-    
-    public String userReg(String name, String surname, String username, String password, String cellNo) {
+
+    // 4
+    public String registerUser(String name, String surname,
+                               String username, String password,
+                               String cellNumber) {
+
         if (!checkUserName(username)) {
-            return "Username is not coreectly formatted. Please ensure that the username contains an underscore and is  ot longer than five letters.";
+            return "Username is not correctly formatted; must contain '_' and be ≤ 5 characters.";
         }
-        if (!checkPassword(password)) {
-            return "Password is not formatted correctly. Please ensure your password contains a capital letter, a number, a special character and is at least 8 characters in lenght.";
+
+        if (!checkPasswordComplexity(password)) {
+            return "Password must be 8+ chars with capital, number and special character.";
         }
-        if (!checkCellNo(cellNo)) {
-            return "Please ensure that your cellphone number is the correct lenght and caontains the international code (+27)";
+
+        if (!checkCellPhoneNumber(cellNumber)) {
+            return "Cell number must start with +27 and contain 9 digits.";
         }
-        
-        this.cellNo = cellNo;
+
         this.name = name;
-        this.password = password;
         this.surname = surname;
         this.username = username;
-        
-        return "Account creation is successful!";
+        this.password = password;
+        this.cellNumber = cellNumber;
+
+        return "Account successfully created.";
     }
-    
-    public boolean login(String username, String password) {
-       if (this.username == null) {
-           return false;
-       }
-       return this.username.equals(username) && this.password.equals(password);
+
+    // 5
+    public boolean loginUser(String username, String password) {
+        if (this.username == null) return false;
+        return this.username.equals(username) && this.password.equals(password);
     }
-    
-    public String returnLogin(String username, String password) {
-        if (login(username, password)) {
-            return "Welcome" + name + surname + "It is an honour to have you again.";
-        }
-        else {
-            return "Username or password  incorrect. Please try again.";
+
+    // 6
+    public String returnLoginStatus(String username, String password) {
+
+        if (loginUser(username, password)) {
+            return "Welcome " + name + " " + surname + ", it is great to see you again.";
+        } else {
+            return "Username or password incorrect. Please try again.";
         }
     }
 }

@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class WelcomeFrame {
 
-    public WelcomeFrame(String messageText) {
+    public WelcomeFrame(String message) {
 
         JFrame window = new JFrame("Welcome");
         window.setSize(400, 200);
@@ -12,10 +12,10 @@ public class WelcomeFrame {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setLocationRelativeTo(null);
 
-        JLabel message = new JLabel("<html><center>" + messageText + "</center></html>");
-        message.setBounds(50, 50, 300, 50);
+        JLabel label = new JLabel("<html><center>" + message + "</center></html>");
+        label.setBounds(50, 50, 300, 50);
+        window.add(label);
 
-        window.add(message);
         window.setVisible(true);
     }
 }
