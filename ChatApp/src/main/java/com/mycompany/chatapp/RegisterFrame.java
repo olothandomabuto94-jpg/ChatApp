@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class RegisterFrame {
-
+        
     public RegisterFrame(Login login) {
 
         JFrame window = new JFrame("Register");
@@ -13,7 +13,7 @@ public class RegisterFrame {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setLocationRelativeTo(null);
 
-        // Labels + fields aligned properly
+        // Labels + fields 
 
         JLabel nameLbl = new JLabel("First Name:");
         nameLbl.setBounds(30, 20, 120, 25);

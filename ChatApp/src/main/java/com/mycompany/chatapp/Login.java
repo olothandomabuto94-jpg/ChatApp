@@ -8,12 +8,10 @@ public class Login {
     private String name;
     private String surname;
 
-    // 1
     public boolean checkUserName(String username) {
         return username.length() <= 5 && username.contains("_");
     }
 
-    // 2
     public boolean checkPasswordComplexity(String password) {
 
         if (password.length() < 8) return false;
@@ -33,12 +31,10 @@ public class Login {
         return capital && number && special;
     }
 
-    // 3
     public boolean checkCellPhoneNumber(String cellNumber) {
         return cellNumber.matches("\\+27\\d{9}");
     }
 
-    // 4
     public String registerUser(String name, String surname,
                                String username, String password,
                                String cellNumber) {
@@ -64,13 +60,11 @@ public class Login {
         return "Account successfully created.";
     }
 
-    // 5
     public boolean loginUser(String username, String password) {
         if (this.username == null) return false;
         return this.username.equals(username) && this.password.equals(password);
     }
 
-    // 6
     public String returnLoginStatus(String username, String password) {
 
         if (loginUser(username, password)) {
