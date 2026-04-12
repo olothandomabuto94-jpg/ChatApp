@@ -47,7 +47,7 @@ public class RegisterFrame {
         passField.setBounds(160, 140, 200, 25);
         window.add(passField);
 
-        JLabel cellLbl = new JLabel("Cell Number:");
+        JLabel cellLbl = new JLabel("Cell Number (e.g. 083...)");
         cellLbl.setBounds(30, 180, 120, 25);
         window.add(cellLbl);
 

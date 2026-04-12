@@ -32,8 +32,18 @@ public class Login {
     }
 
     public boolean checkCellPhoneNumber(String cellNumber) {
-        return cellNumber.matches("\\+27\\d{9}");
+
+    if (cellNumber.startsWith("0") && cellNumber.length() == 10) {
+        cellNumber = "+27" + cellNumber.substring(1);
     }
+
+    if (cellNumber.matches("\\+27\\d{9}")) {
+        this.cellNumber = cellNumber; 
+        return true;
+    }
+
+    return false;
+}
 
     public String registerUser(String name, String surname,
                                String username, String password,
@@ -55,7 +65,6 @@ public class Login {
         this.surname = surname;
         this.username = username;
         this.password = password;
-        this.cellNumber = cellNumber;
 
         return "Account successfully created.";
     }

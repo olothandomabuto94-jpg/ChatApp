@@ -39,6 +39,11 @@ public class LoginTest {
     public void testInvalidCell() {
         assertFalse(login.checkCellPhoneNumber("08966553"));
     }
+    
+    @Test
+    public void testCellAutoConvert() {
+    assertTrue(login.checkCellPhoneNumber("0838968976"));
+    }
 
     // ---------------- LOGIN ----------------
     @Test
