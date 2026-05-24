@@ -42,8 +42,16 @@ public class LoginFrame {
             String p = new String(passField.getPassword());
 
             if (login.loginUser(u, p)) {
+
                 window.dispose();
-                new WelcomeFrame(String String);
+
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Welcome to QuickChat."
+                );
+
+                new MessageFrame(); // ✅ clean call
+
             } else {
                 msg.setText(login.returnLoginStatus(u, p));
             }

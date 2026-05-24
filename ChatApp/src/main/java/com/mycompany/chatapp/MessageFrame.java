@@ -96,20 +96,17 @@ public class MessageFrame {
                     "Message (max 250 chars):"
             );
 
-            // FIXED constructor match
             Message msg = new Message(sentCount + 1, recipient, text);
 
-            if (!msg.checkRecipientCell()
-                    .equals("Cell phone number successfully captured.")) {
-
-                JOptionPane.showMessageDialog(null, msg.checkRecipientCell());
+            String recipientCheck = msg.checkRecipientCell(); // Error is here. "Incompatible types. Int cannot be converted to string"
+            if (!recipientCheck.equals("Cell phone number successfully captured.")) {
+                JOptionPane.showMessageDialog(null, recipientCheck);
                 continue;
             }
 
-            if (!msg.checkMessageLength()
-                    .equals("Message ready to send.")) {
-
-                JOptionPane.showMessageDialog(null, msg.checkMessageLength());
+            String lengthCheck = msg.checkMessageLength();
+            if (!lengthCheck.equals("Message ready to send.")) {
+                JOptionPane.showMessageDialog(null, lengthCheck);
                 continue;
             }
 
@@ -122,7 +119,7 @@ public class MessageFrame {
                     "Send / Store / Discard"
             );
 
-            if (action == null) return;
+            if (action == null) continue;
 
             JOptionPane.showMessageDialog(
                     null,
