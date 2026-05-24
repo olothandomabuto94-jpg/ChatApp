@@ -1,129 +1,105 @@
 package com.mycompany.chatapp;
 
-import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Message {
 
-    private String messageID;
     private String recipient;
-    private String message;
+    private String messageText;
+    private String messageID;
     private String messageHash;
 
     private static int totalMessages = 0;
-    private static ArrayList<String> sentMessages = new ArrayList<>();
 
-    public Message(String recipient, String message) {
-        this.messageID = String.format("%02d", totalMessages);
+    // construct
+    public Message(String recipient, String messageText) {
         this.recipient = recipient;
-        this.message = message;
+        this.messageText = messageText;
+
+        this.messageID = generateID();
         this.messageHash = createMessageHash();
     }
 
-    // massage ID check
-    public boolean checkMessageID() {
-        return messageID.length() <= 10;
+    // ID generation simple random 10-digit
+    private String generateID() {
+        long id = (long)(Math.random() * 9_000_000_000L) + 1_000_000_000L;
+        return String.valueOf(id);
     }
 
-    // recipient number check
-    public int checkRecipientCell() {
-
-        if (recipient.matches("^\\+27\\d{9}$")) {
-            return 1;
-        }
-
-        return 0;
-    }
-
-    // checks message length is <= 250 characters
+    // validate message length
     public String checkMessageLength() {
-
-        if (message.length() <= 250) {
+        if (messageText.length() <= 250) {
             return "Message ready to send.";
         }
-
-        int extra = message.length() - 250;
-
         return "Message exceeds 250 characters by "
-                + extra
+                + (messageText.length() - 250)
                 + ", please reduce size.";
     }
 
-    // Hash
-    public String createMessageHash() {
-
-        String[] words = message.trim().split("\\s+");
-
-        String firstTwo =
-                words[0].substring(0, 2);
-
-        String lastWord =
-                words[words.length - 1];
-
-        return messageID
-                + ":"
-                + totalMessages
-                + ":"
-                + (firstTwo + lastWord).toUpperCase();
+    // validate recipient (+27 format expected from GUI)
+    public int checkRecipientCell() {
+        if (recipient != null && recipient.matches("\\+27\\d{9}")) {
+            return 1;
+        }
+        return 0;
     }
 
-    // send, store or discard
-    public String sentMessage(String option) {
+    // hash creation
+    public String createMessageHash() {
+        String first = messageText.split("\\s+")[0];
+        String last = messageText.split("\\s+")[messageText.split("\\s+").length - 1];
 
-        if (option.equals("Send")) {
+        return (messageID.substring(0, 2)
+                + ":" + (totalMessages + 1)
+                + ":" + first + last).toUpperCase();
+    }
 
+    // send, store, discard handler
+    public String sentMessage(String action) {
+
+        if (action.equalsIgnoreCase("Send")) {
             totalMessages++;
-
-            sentMessages.add(printSingleMessage());
-
             return "Message sent.";
         }
 
-        if (option.equals("Store")) {
-
+        if (action.equalsIgnoreCase("Store")) {
             storeMessage();
-
             return "Message stored.";
         }
 
         return "Message discarded.";
     }
 
-    // Display one
-    public String printSingleMessage() {
-
-        return "MessageID: " + messageID
-                + "\nMessage Hash: " + messageHash
-                + "\nRecipient: " + recipient
-                + "\nMessage: " + message;
-    }
-
-    // Display all
-    public static String printMessages() {
-
-        String result = "";
-
-        for (String msg : sentMessages) {
-            result += msg + "\n\n";
-        }
-
-        return result;
-    }
-
-    // Total
-    public static int returnTotalMessages() {
-        return totalMessages;
-    }
-
-    // JSON Storage
+    // JSON storage
     public void storeMessage() {
 
         String json =
-                "{"
-                + "\"messageID\":\"" + messageID + "\","
-                + "\"recipient\":\"" + recipient + "\","
-                + "\"message\":\"" + message + "\""
-                + "}";
+                "{\n" +
+                "  \"messageID\": \"" + messageID + "\",\n" +
+                "  \"recipient\": \"" + recipient + "\",\n" +
+                "  \"message\": \"" + messageText + "\",\n" +
+                "  \"hash\": \"" + messageHash + "\"\n" +
+                "}\n";
 
-        System.out.println(json);
+        try (FileWriter writer = new FileWriter("stored_messages.json", true)) {
+            writer.write(json);
+            writer.write(",\n");
+        } catch (IOException e) {
+            System.out.println("Error storing message: " + e.getMessage());
+        }
+    }
+
+    // display message
+    public String printSingleMessage() {
+        return "Message ID: " + messageID +
+                "\nHash: " + messageHash +
+                "\nRecipient: " + recipient +
+                "\nMessage: " + messageText;
+    }
+
+    // total sent messages
+    public static int returnTotalMessages() {
+        return totalMessages;
     }
 }
