@@ -4,84 +4,117 @@ import javax.swing.*;
 
 public class MessageFrame {
 
-    public MessageFrame() {
+    public MessageFrame(int messageNumber) {
 
-        JFrame window = new JFrame("Send Message");
-        window.setSize(400, 300);
-        window.setLayout(null);
-        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        window.setLocationRelativeTo(null);
+        JDialog dialog = new JDialog((java.awt.Frame) null, "Send Message", true);
+        dialog.setSize(440, 320);
+        dialog.setLayout(null);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setLocationRelativeTo(null);
 
-        // user inputs
-        JLabel recLbl = new JLabel("Recipient (+27...):");
-        recLbl.setBounds(30, 30, 150, 25);
-        window.add(recLbl);
+        JLabel heading = new JLabel("Message " + (messageNumber + 1));
+        heading.setBounds(30, 15, 120, 25);
+        dialog.add(heading);
+
+        JLabel recLbl = new JLabel("Recipient:");
+        recLbl.setBounds(30, 50, 120, 25);
+        dialog.add(recLbl);
 
         JTextField recField = new JTextField();
-        recField.setBounds(180, 30, 170, 25);
-        window.add(recField);
+        recField.setBounds(150, 50, 220, 25);
+        dialog.add(recField);
 
         JLabel msgLbl = new JLabel("Message:");
-        msgLbl.setBounds(30, 70, 150, 25);
-        window.add(msgLbl);
+        msgLbl.setBounds(30, 85, 120, 25);
+        dialog.add(msgLbl);
 
-        JTextArea msgField = new JTextArea();
-        msgField.setBounds(180, 70, 170, 80);
-        window.add(msgField);
+        JTextArea msgArea = new JTextArea();
+        msgArea.setLineWrap(true);
+        msgArea.setWrapStyleWord(true);
+        msgArea.setBounds(150, 85, 220, 90);
+        dialog.add(msgArea);
 
-        // actions to send, store ro dsicard
+        JLabel actionLbl = new JLabel("Choose action:");
+        actionLbl.setBounds(30, 185, 120, 25);
+        dialog.add(actionLbl);
+
         JButton sendBtn = new JButton("Send");
-        sendBtn.setBounds(30, 180, 90, 30);
-        window.add(sendBtn);
+        sendBtn.setBounds(150, 185, 65, 30);
+        dialog.add(sendBtn);
 
         JButton storeBtn = new JButton("Store");
-        storeBtn.setBounds(140, 180, 90, 30);
-        window.add(storeBtn);
+        storeBtn.setBounds(220, 185, 65, 30);
+        dialog.add(storeBtn);
 
         JButton discardBtn = new JButton("Discard");
-        discardBtn.setBounds(250, 180, 90, 30);
-        window.add(discardBtn);
+        discardBtn.setBounds(290, 185, 80, 30);
+        dialog.add(discardBtn);
 
-        // output
-        JLabel output = new JLabel("");
-        output.setBounds(30, 220, 330, 25);
-        window.add(output);
+        JLabel status = new JLabel("");
+        status.setBounds(30, 230, 360, 25);
+        dialog.add(status);
 
-        // send message flow
-        sendBtn.addActionListener(e -> {
+        sendBtn.addActionListener(e -> handleAction(
+                dialog,
+                messageNumber,
+                recField.getText().trim(),
+                msgArea.getText().trim(),
+                "Send"
+        ));
 
-            Message msg = new Message(recField.getText(), msgField.getText());
+        storeBtn.addActionListener(e -> handleAction(
+                dialog,
+                messageNumber,
+                recField.getText().trim(),
+                msgArea.getText().trim(),
+                "Store"
+        ));
 
-            String validation = msg.checkMessageLength();
+        discardBtn.addActionListener(e -> {
+            Message msg = new Message(messageNumber, recField.getText().trim(), msgArea.getText().trim());
+            JOptionPane.showMessageDialog(dialog, msg.SentMessage("Discard"));
+            dialog.dispose();
+        });
 
-            if (!validation.equals("Message ready to send.")) {
-                output.setText(validation);
-                return;
-            }
+        dialog.setVisible(true);
+    }
 
-            if (!msg.checkRecipientCell().equals("Cell phone number successfully captured.")) {
-                output.setText(msg.checkRecipientCell());
-                return;
-            }
+    private void handleAction(JDialog dialog, int messageNumber, String recipient, String text, String action) {
 
+        if (recipient.isEmpty() || text.isEmpty()) {
+            JOptionPane.showMessageDialog(dialog, "Please fill in both fields.");
+            return;
+        }
+
+        Message msg = new Message(messageNumber, recipient, text);
+
+        if (msg.checkRecipientCell() == 0) {
+            JOptionPane.showMessageDialog(dialog, msg.checkRecipientCellMessage());
+            return;
+        }
+
+        String lengthStatus = msg.checkMessageLength();
+        if (!lengthStatus.equals("Message ready to send.")) {
+            JOptionPane.showMessageDialog(dialog, lengthStatus);
+            return;
+        }
+
+        if (action.equalsIgnoreCase("Send")) {
             JOptionPane.showMessageDialog(
-                    null,
+                    dialog,
                     msg.printSingleMessage()
             );
-
-            output.setText(msg.sentMessage("Send"));
-        });
-
-        // massage storage
-        storeBtn.addActionListener(e -> {
-
-            Message msg = new Message(recField.getText(), msgField.getText());
-            output.setText(msg.sentMessage("Store"));
-        });
-
-        // discard message
-        discardBtn.addActionListener(e -> output.setText("Message discarded."));
-
-        window.setVisible(true);
+            JOptionPane.showMessageDialog(
+                    dialog,
+                    msg.SentMessage("Send")
+            );
+            dialog.dispose();
+        } else if (action.equalsIgnoreCase("Store")) {
+            JOptionPane.showMessageDialog(
+                    dialog,
+                    msg.SentMessage("Store")
+            );
+            dialog.dispose();
+        }
     }
 }

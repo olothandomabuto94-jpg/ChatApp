@@ -1,17 +1,28 @@
 package com.mycompany.chatapp;
 
 import java.io.FileWriter;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 public class Message {
 
+    private int messageNumber;
     private String recipient;
     private String messageText;
     private String messageID;
     private String messageHash;
 
     private static int totalMessages = 0;
+    private static ArrayList<String> messages = new ArrayList<>();
+    private static ArrayList<String> storedMessagesJson = new ArrayList<>();
 
-    public Message(String recipient, String messageText) {
+    public Message(int messageNumber, String recipient, String messageText) {
+
+        if (recipient != null && recipient.startsWith("0") && recipient.length() == 10) {
+            recipient = "+27" + recipient.substring(1);
+        }
+
+        this.messageNumber = messageNumber;
         this.recipient = recipient;
         this.messageText = messageText;
 
@@ -20,47 +31,67 @@ public class Message {
     }
 
     private String generateID() {
-        long id = (long)(Math.random() * 9_000_000_000L) + 1_000_000_000L;
-        return String.valueOf(id);
+        int randomPart = (int) (Math.random() * 100000000);
+        return "00" + String.format("%08d", randomPart);
     }
 
     public boolean checkMessageID() {
         return messageID.length() <= 10;
     }
 
-    public String checkRecipientCell() {
+    public int checkRecipientCell() {
         if (recipient != null && recipient.matches("\\+27\\d{9}")) {
+            return 1;
+        }
+        return 0;
+    }
+
+    public String checkRecipientCellMessage() {
+        if (checkRecipientCell() == 1) {
             return "Cell phone number successfully captured.";
         }
+
         return "Cell phone number is incorrectly formatted or does not contain an international code. Please correct the number and try again.";
     }
 
     public String checkMessageLength() {
-        if (messageText.length() <= 250) {
+
+        if (messageText != null && messageText.length() <= 250) {
             return "Message ready to send.";
         }
 
-        return "Message exceeds 250 Characters by "
-                + (messageText.length() - 250)
-                + ", please reduce size.";
+        int extra = messageText == null ? 250 : messageText.length() - 250;
+        return "Message exceeds 250 characters by " + extra + ", please reduce size.";
     }
 
     public String createMessageHash() {
 
         String[] words = messageText.trim().split("\\s+");
-
-        String first = words[0];
-        String last = words[words.length - 1];
+        String firstWord = words[0].replaceAll("[^A-Za-z0-9]", "");
+        String lastWord = words[words.length - 1].replaceAll("[^A-Za-z0-9]", "");
 
         return (messageID.substring(0, 2)
-                + ":" + (totalMessages + 1)
-                + ":" + first + last).toUpperCase();
+                + ":" + messageNumber
+                + ":" + firstWord + lastWord).toUpperCase();
     }
 
-    public String sentMessage(String action) {
+    public String SentMessage() {
+        String choice = JOptionPane.showInputDialog(
+                "Choose one:\n1. Send\n2. Store\n3. Discard"
+        );
+
+        if (choice == null) {
+            return "Message discarded.";
+        }
+
+        return SentMessage(choice);
+    }
+
+    public String SentMessage(String action) {
 
         if (action.equalsIgnoreCase("Send")) {
             totalMessages++;
+            messages.add(printSingleMessage());
             return "Message sent.";
         }
 
@@ -72,42 +103,59 @@ public class Message {
         return "Message discarded.";
     }
 
+    public String sentMessage(String action) {
+        return SentMessage(action);
+    }
+
     public void storeMessage() {
 
-        String fileName = "stored_messages.json";
+        storedMessagesJson.add(
+                "  {\n" +
+                "    \"messageNumber\": " + messageNumber + ",\n" +
+                "    \"messageID\": \"" + escapeJson(messageID) + "\",\n" +
+                "    \"messageHash\": \"" + escapeJson(messageHash) + "\",\n" +
+                "    \"recipient\": \"" + escapeJson(recipient) + "\",\n" +
+                "    \"message\": \"" + escapeJson(messageText) + "\"\n" +
+                "  }"
+        );
 
-        try {
-            java.io.File file = new java.io.File(fileName);
+        try (FileWriter writer = new FileWriter("stored_messages.json")) {
+            writer.write("[\n");
 
-            boolean isNew = !file.exists();
-
-            FileWriter writer = new FileWriter(file, true);
-
-            if (isNew) {
-                writer.write("[\n");
+            for (int i = 0; i < storedMessagesJson.size(); i++) {
+                writer.write(storedMessagesJson.get(i));
+                if (i < storedMessagesJson.size() - 1) {
+                    writer.write(",\n");
+                } else {
+                    writer.write("\n");
+                }
             }
 
-            String json =
-                    "  {\n" +
-                    "    \"messageID\": \"" + messageID + "\",\n" +
-                    "    \"recipient\": \"" + recipient + "\",\n" +
-                    "    \"message\": \"" + messageText + "\",\n" +
-                    "    \"hash\": \"" + messageHash + "\"\n" +
-                    "  },\n";
-
-            writer.write(json);
-            writer.close();
-
+            writer.write("]\n");
         } catch (Exception e) {
-            System.out.println("Error storing message: " + e.getMessage());
         }
     }
 
+    private String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
     public String printSingleMessage() {
-        return "Message ID: " + messageID +
-                "\nHash: " + messageHash +
-                "\nRecipient: " + recipient +
-                "\nMessage: " + messageText;
+        return "MessageID: " + messageID
+                + "\nMessage Hash: " + messageHash
+                + "\nRecipient: " + recipient
+                + "\nMessage: " + messageText;
+    }
+
+    public static String printMessages() {
+        if (messages.isEmpty()) {
+            return "No messages sent.";
+        }
+
+        return String.join("\n\n", messages);
     }
 
     public static int returnTotalMessages() {

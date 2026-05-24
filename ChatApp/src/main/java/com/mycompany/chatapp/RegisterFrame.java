@@ -53,7 +53,7 @@ public class RegisterFrame {
         window.add(cellField);
 
         JLabel feedback = new JLabel("");
-        feedback.setBounds(30, 220, 350, 40);
+        feedback.setBounds(30, 230, 350, 30);
         window.add(feedback);
 
         JButton btn = new JButton("Register");

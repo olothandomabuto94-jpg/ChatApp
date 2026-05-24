@@ -7,21 +7,19 @@ public class LoginTest {
 
     Login login = new Login();
 
-    // ---------------- USERNAME ----------------
     @Test
     public void testValidUsername() {
-        assertTrue(login.checkUserName("kyl_1"));
+        assertTrue(login.checkUserName("ab_c"));
     }
 
     @Test
     public void testInvalidUsername() {
-        assertFalse(login.checkUserName("kyle!!!!"));
+        assertFalse(login.checkUserName("abcdef"));
     }
 
-    // ---------------- PASSWORD ----------------
     @Test
     public void testValidPassword() {
-        assertTrue(login.checkPasswordComplexity("Ch&sec@ke99!"));
+        assertTrue(login.checkPasswordComplexity("Pass@123"));
     }
 
     @Test
@@ -29,26 +27,24 @@ public class LoginTest {
         assertFalse(login.checkPasswordComplexity("password"));
     }
 
-    // ---------------- CELL NUMBER ----------------
     @Test
     public void testValidCell() {
         assertEquals(
-            "Cell phone number successfully captured.",
-            login.checkCellPhoneNumber("+27838968976")
+                "Cell phone number successfully captured.",
+                login.checkCellPhoneNumber("0838968976")
         );
     }
 
     @Test
     public void testInvalidCell() {
         assertEquals(
-            "Cell phone number is incorrectly formatted or does not contain an international code. Please correct the number and try again.",
-            login.checkCellPhoneNumber("08966553")
+                "Cell phone number is incorrectly formatted or does not contain an international code. Please correct the number and try again.",
+                login.checkCellPhoneNumber("08575975889")
         );
     }
 
-    // ---------------- LOGIN ----------------
     @Test
-    public void testLoginFailBeforeRegister() {
-        assertFalse(login.loginUser("abc", "1234"));
+    public void testLoginFail() {
+        assertFalse(login.loginUser("a", "b"));
     }
 }

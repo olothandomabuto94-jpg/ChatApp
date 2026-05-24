@@ -30,26 +30,37 @@ public class Login {
     }
 
     public String checkCellPhoneNumber(String cellNumber) {
+
+        if (cellNumber.startsWith("0") && cellNumber.length() == 10) {
+            cellNumber = "+27" + cellNumber.substring(1);
+        }
+
         if (cellNumber.matches("\\+27\\d{9}")) {
             return "Cell phone number successfully captured.";
         }
+
         return "Cell phone number is incorrectly formatted or does not contain an international code. Please correct the number and try again.";
     }
 
     public String registerUser(String name, String surname,
-                               String username, String password,
-                               String cellNumber) {
+            String username, String password,
+            String cellNumber) {
 
         if (!checkUserName(username)) {
-            return "Username is not correctly formatted; must contain '_' and be ≤ 5 characters.";
+            return "Username must contain _ and be 5 characters or less.";
         }
 
         if (!checkPasswordComplexity(password)) {
             return "Password must be 8+ chars with capital, number and special character.";
         }
 
-        if (!checkCellPhoneNumber(cellNumber).startsWith("Cell phone number successfully captured")) {
-            return checkCellPhoneNumber(cellNumber);
+        String cellStatus = checkCellPhoneNumber(cellNumber);
+        if (!cellStatus.equals("Cell phone number successfully captured.")) {
+            return cellStatus;
+        }
+
+        if (cellNumber.startsWith("0") && cellNumber.length() == 10) {
+            cellNumber = "+27" + cellNumber.substring(1);
         }
 
         this.name = name;
@@ -62,8 +73,11 @@ public class Login {
     }
 
     public boolean loginUser(String username, String password) {
+
         if (this.username == null) return false;
-        return this.username.equals(username) && this.password.equals(password);
+
+        return this.username.equals(username)
+                && this.password.equals(password);
     }
 
     public String returnLoginStatus(String username, String password) {
@@ -71,6 +85,7 @@ public class Login {
         if (loginUser(username, password)) {
             return "Welcome " + name + " " + surname + ", it is great to see you again.";
         }
+
         return "Username or password incorrect. Please try again.";
     }
 }

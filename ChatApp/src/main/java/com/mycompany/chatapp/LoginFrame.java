@@ -28,9 +28,9 @@ public class LoginFrame {
         passField.setBounds(120, 90, 180, 25);
         window.add(passField);
 
-        JLabel message = new JLabel("");
-        message.setBounds(30, 130, 300, 25);
-        window.add(message);
+        JLabel msg = new JLabel("");
+        msg.setBounds(30, 130, 300, 25);
+        window.add(msg);
 
         JButton btn = new JButton("Login");
         btn.setBounds(120, 160, 100, 30);
@@ -43,9 +43,9 @@ public class LoginFrame {
 
             if (login.loginUser(u, p)) {
                 window.dispose();
-                new WelcomeFrame(login.returnLoginStatus(u, p));
+                new WelcomeFrame();
             } else {
-                message.setText(login.returnLoginStatus(u, p));
+                msg.setText(login.returnLoginStatus(u, p));
             }
         });
 
