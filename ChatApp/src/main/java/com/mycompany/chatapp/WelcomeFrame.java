@@ -92,7 +92,7 @@ public class WelcomeFrame {
             );
         });
 
-        // ACTION: Quit application completely
+        //Quit application completely
         quitBtn.addActionListener(e -> {
             System.exit(0);
         });
