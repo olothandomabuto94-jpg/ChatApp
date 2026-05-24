@@ -32,17 +32,18 @@ public class LoginTest {
     // ---------------- CELL NUMBER ----------------
     @Test
     public void testValidCell() {
-        assertTrue(login.checkCellPhoneNumber("+27838968976"));
+        assertEquals(
+            "Cell phone number successfully captured.",
+            login.checkCellPhoneNumber("+27838968976")
+        );
     }
 
     @Test
     public void testInvalidCell() {
-        assertFalse(login.checkCellPhoneNumber("08966553"));
-    }
-    
-    @Test
-    public void testCellAutoConvert() {
-    assertTrue(login.checkCellPhoneNumber("0838968976"));
+        assertEquals(
+            "Cell phone number is incorrectly formatted or does not contain an international code. Please correct the number and try again.",
+            login.checkCellPhoneNumber("08966553")
+        );
     }
 
     // ---------------- LOGIN ----------------

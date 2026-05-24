@@ -1,7 +1,6 @@
 package com.mycompany.chatapp;
 
 import java.io.FileWriter;
-import java.io.IOException;
 
 public class Message {
 
@@ -12,7 +11,6 @@ public class Message {
 
     private static int totalMessages = 0;
 
-    // construct
     public Message(String recipient, String messageText) {
         this.recipient = recipient;
         this.messageText = messageText;
@@ -21,41 +19,44 @@ public class Message {
         this.messageHash = createMessageHash();
     }
 
-    // ID generation simple random 10-digit
     private String generateID() {
         long id = (long)(Math.random() * 9_000_000_000L) + 1_000_000_000L;
         return String.valueOf(id);
     }
 
-    // validate message length
+    public boolean checkMessageID() {
+        return messageID.length() <= 10;
+    }
+
+    public String checkRecipientCell() {
+        if (recipient != null && recipient.matches("\\+27\\d{9}")) {
+            return "Cell phone number successfully captured.";
+        }
+        return "Cell phone number is incorrectly formatted or does not contain an international code. Please correct the number and try again.";
+    }
+
     public String checkMessageLength() {
         if (messageText.length() <= 250) {
             return "Message ready to send.";
         }
-        return "Message exceeds 250 characters by "
+
+        return "Message exceeds 250 Characters by "
                 + (messageText.length() - 250)
                 + ", please reduce size.";
     }
 
-    // validate recipient (+27 format expected from GUI)
-    public int checkRecipientCell() {
-        if (recipient != null && recipient.matches("\\+27\\d{9}")) {
-            return 1;
-        }
-        return 0;
-    }
-
-    // hash creation
     public String createMessageHash() {
-        String first = messageText.split("\\s+")[0];
-        String last = messageText.split("\\s+")[messageText.split("\\s+").length - 1];
+
+        String[] words = messageText.trim().split("\\s+");
+
+        String first = words[0];
+        String last = words[words.length - 1];
 
         return (messageID.substring(0, 2)
                 + ":" + (totalMessages + 1)
                 + ":" + first + last).toUpperCase();
     }
 
-    // send, store, discard handler
     public String sentMessage(String action) {
 
         if (action.equalsIgnoreCase("Send")) {
@@ -71,26 +72,37 @@ public class Message {
         return "Message discarded.";
     }
 
-    // JSON storage
     public void storeMessage() {
 
-        String json =
-                "{\n" +
-                "  \"messageID\": \"" + messageID + "\",\n" +
-                "  \"recipient\": \"" + recipient + "\",\n" +
-                "  \"message\": \"" + messageText + "\",\n" +
-                "  \"hash\": \"" + messageHash + "\"\n" +
-                "}\n";
+        String fileName = "stored_messages.json";
 
-        try (FileWriter writer = new FileWriter("stored_messages.json", true)) {
+        try {
+            java.io.File file = new java.io.File(fileName);
+
+            boolean isNew = !file.exists();
+
+            FileWriter writer = new FileWriter(file, true);
+
+            if (isNew) {
+                writer.write("[\n");
+            }
+
+            String json =
+                    "  {\n" +
+                    "    \"messageID\": \"" + messageID + "\",\n" +
+                    "    \"recipient\": \"" + recipient + "\",\n" +
+                    "    \"message\": \"" + messageText + "\",\n" +
+                    "    \"hash\": \"" + messageHash + "\"\n" +
+                    "  },\n";
+
             writer.write(json);
-            writer.write(",\n");
-        } catch (IOException e) {
+            writer.close();
+
+        } catch (Exception e) {
             System.out.println("Error storing message: " + e.getMessage());
         }
     }
 
-    // display message
     public String printSingleMessage() {
         return "Message ID: " + messageID +
                 "\nHash: " + messageHash +
@@ -98,7 +110,6 @@ public class Message {
                 "\nMessage: " + messageText;
     }
 
-    // total sent messages
     public static int returnTotalMessages() {
         return totalMessages;
     }

@@ -59,8 +59,8 @@ public class MessageFrame {
                 return;
             }
 
-            if (msg.checkRecipientCell() == 0) {
-                output.setText("Invalid cell number.");
+            if (!msg.checkRecipientCell().equals("Cell phone number successfully captured.")) {
+                output.setText(msg.checkRecipientCell());
                 return;
             }
 

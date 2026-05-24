@@ -1,7 +1,6 @@
 package com.mycompany.chatapp;
 
 import javax.swing.*;
-import java.awt.event.*;
 
 public class LoginFrame {
 

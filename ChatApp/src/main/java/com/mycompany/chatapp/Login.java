@@ -20,9 +20,7 @@ public class Login {
         boolean number = false;
         boolean special = false;
 
-        for (int i = 0; i < password.length(); i++) {
-            char ch = password.charAt(i);
-
+        for (char ch : password.toCharArray()) {
             if (Character.isUpperCase(ch)) capital = true;
             else if (Character.isDigit(ch)) number = true;
             else if (!Character.isLetterOrDigit(ch)) special = true;
@@ -31,19 +29,12 @@ public class Login {
         return capital && number && special;
     }
 
-    public boolean checkCellPhoneNumber(String cellNumber) {
-
-    if (cellNumber.startsWith("0") && cellNumber.length() == 10) {
-        cellNumber = "+27" + cellNumber.substring(1);
+    public String checkCellPhoneNumber(String cellNumber) {
+        if (cellNumber.matches("\\+27\\d{9}")) {
+            return "Cell phone number successfully captured.";
+        }
+        return "Cell phone number is incorrectly formatted or does not contain an international code. Please correct the number and try again.";
     }
-
-    if (cellNumber.matches("\\+27\\d{9}")) {
-        this.cellNumber = cellNumber; 
-        return true;
-    }
-
-    return false;
-}
 
     public String registerUser(String name, String surname,
                                String username, String password,
@@ -57,14 +48,15 @@ public class Login {
             return "Password must be 8+ chars with capital, number and special character.";
         }
 
-        if (!checkCellPhoneNumber(cellNumber)) {
-            return "Cell number must start with +27 and contain 9 digits.";
+        if (!checkCellPhoneNumber(cellNumber).startsWith("Cell phone number successfully captured")) {
+            return checkCellPhoneNumber(cellNumber);
         }
 
         this.name = name;
         this.surname = surname;
         this.username = username;
         this.password = password;
+        this.cellNumber = cellNumber;
 
         return "Account successfully created.";
     }
@@ -78,8 +70,7 @@ public class Login {
 
         if (loginUser(username, password)) {
             return "Welcome " + name + " " + surname + ", it is great to see you again.";
-        } else {
-            return "Username or password incorrect. Please try again.";
         }
+        return "Username or password incorrect. Please try again.";
     }
 }
