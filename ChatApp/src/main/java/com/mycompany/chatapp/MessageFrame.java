@@ -4,117 +4,142 @@ import javax.swing.*;
 
 public class MessageFrame {
 
-    public MessageFrame(int messageNumber) {
+    private int maxMessages;
+    private int sentCount = 0;
 
-        JDialog dialog = new JDialog((java.awt.Frame) null, "Send Message", true);
-        dialog.setSize(440, 320);
-        dialog.setLayout(null);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.setLocationRelativeTo(null);
+    public MessageFrame() {
 
-        JLabel heading = new JLabel("Message " + (messageNumber + 1));
-        heading.setBounds(30, 15, 120, 25);
-        dialog.add(heading);
+        String input = JOptionPane.showInputDialog(
+                "How many messages do you want to send?"
+        );
 
-        JLabel recLbl = new JLabel("Recipient:");
-        recLbl.setBounds(30, 50, 120, 25);
-        dialog.add(recLbl);
+        try {
+            maxMessages = Integer.parseInt(input);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Invalid input. Defaulting to 1.");
+            maxMessages = 1;
+        }
 
-        JTextField recField = new JTextField();
-        recField.setBounds(150, 50, 220, 25);
-        dialog.add(recField);
-
-        JLabel msgLbl = new JLabel("Message:");
-        msgLbl.setBounds(30, 85, 120, 25);
-        dialog.add(msgLbl);
-
-        JTextArea msgArea = new JTextArea();
-        msgArea.setLineWrap(true);
-        msgArea.setWrapStyleWord(true);
-        msgArea.setBounds(150, 85, 220, 90);
-        dialog.add(msgArea);
-
-        JLabel actionLbl = new JLabel("Choose action:");
-        actionLbl.setBounds(30, 185, 120, 25);
-        dialog.add(actionLbl);
-
-        JButton sendBtn = new JButton("Send");
-        sendBtn.setBounds(150, 185, 65, 30);
-        dialog.add(sendBtn);
-
-        JButton storeBtn = new JButton("Store");
-        storeBtn.setBounds(220, 185, 65, 30);
-        dialog.add(storeBtn);
-
-        JButton discardBtn = new JButton("Discard");
-        discardBtn.setBounds(290, 185, 80, 30);
-        dialog.add(discardBtn);
-
-        JLabel status = new JLabel("");
-        status.setBounds(30, 230, 360, 25);
-        dialog.add(status);
-
-        sendBtn.addActionListener(e -> handleAction(
-                dialog,
-                messageNumber,
-                recField.getText().trim(),
-                msgArea.getText().trim(),
-                "Send"
-        ));
-
-        storeBtn.addActionListener(e -> handleAction(
-                dialog,
-                messageNumber,
-                recField.getText().trim(),
-                msgArea.getText().trim(),
-                "Store"
-        ));
-
-        discardBtn.addActionListener(e -> {
-            Message msg = new Message(messageNumber, recField.getText().trim(), msgArea.getText().trim());
-            JOptionPane.showMessageDialog(dialog, msg.SentMessage("Discard"));
-            dialog.dispose();
-        });
-
-        dialog.setVisible(true);
+        menu();
     }
 
-    private void handleAction(JDialog dialog, int messageNumber, String recipient, String text, String action) {
+    private void menu() {
 
-        if (recipient.isEmpty() || text.isEmpty()) {
-            JOptionPane.showMessageDialog(dialog, "Please fill in both fields.");
-            return;
+        while (true) {
+
+            String option = JOptionPane.showInputDialog(
+                    "QuickChat Menu\n\n"
+                    + "1. Send Messages\n"
+                    + "2. Show Recently Sent Messages\n"
+                    + "3. Quit"
+            );
+
+            if (option == null) return;
+
+            switch (option) {
+
+                case "1":
+
+                    if (sentCount >= maxMessages) {
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Message limit reached (" + maxMessages + ")."
+                        );
+                        break;
+                    }
+
+                    sendMessages();
+                    break;
+
+                case "2":
+
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Coming Soon."
+                    );
+                    break;
+
+                case "3":
+
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Goodbye."
+                    );
+
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Total messages sent: " + Message.returnTotalMessages()
+                    );
+
+                    System.exit(0);
+                    break;
+
+                default:
+
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Please enter 1, 2 or 3."
+                    );
+            }
         }
+    }
 
-        Message msg = new Message(messageNumber, recipient, text);
+    private void sendMessages() {
 
-        if (msg.checkRecipientCell() == 0) {
-            JOptionPane.showMessageDialog(dialog, msg.checkRecipientCellMessage());
-            return;
-        }
+        while (sentCount < maxMessages) {
 
-        String lengthStatus = msg.checkMessageLength();
-        if (!lengthStatus.equals("Message ready to send.")) {
-            JOptionPane.showMessageDialog(dialog, lengthStatus);
-            return;
-        }
+            String recipient = JOptionPane.showInputDialog(
+                    "Recipient (+27 or 0xxxxxxxxx):"
+            );
 
-        if (action.equalsIgnoreCase("Send")) {
+            String text = JOptionPane.showInputDialog(
+                    "Message (max 250 chars):"
+            );
+
+            // FIXED constructor match
+            Message msg = new Message(sentCount + 1, recipient, text);
+
+            if (!msg.checkRecipientCell()
+                    .equals("Cell phone number successfully captured.")) {
+
+                JOptionPane.showMessageDialog(null, msg.checkRecipientCell());
+                continue;
+            }
+
+            if (!msg.checkMessageLength()
+                    .equals("Message ready to send.")) {
+
+                JOptionPane.showMessageDialog(null, msg.checkMessageLength());
+                continue;
+            }
+
             JOptionPane.showMessageDialog(
-                    dialog,
+                    null,
                     msg.printSingleMessage()
             );
-            JOptionPane.showMessageDialog(
-                    dialog,
-                    msg.SentMessage("Send")
+
+            String action = JOptionPane.showInputDialog(
+                    "Send / Store / Discard"
             );
-            dialog.dispose();
-        } else if (action.equalsIgnoreCase("Store")) {
+
+            if (action == null) return;
+
             JOptionPane.showMessageDialog(
-                    dialog,
-                    msg.SentMessage("Store")
+                    null,
+                    msg.sentMessage(action)
             );
-            dialog.dispose();
+
+            if (action.equalsIgnoreCase("Send")) {
+                sentCount++;
+            }
+
+            if (sentCount >= maxMessages) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "All messages complete.\nTotal sent: " + Message.returnTotalMessages()
+                );
+                break;
+            }
         }
     }
 }

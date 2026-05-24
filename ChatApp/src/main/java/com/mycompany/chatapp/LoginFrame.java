@@ -43,7 +43,7 @@ public class LoginFrame {
 
             if (login.loginUser(u, p)) {
                 window.dispose();
-                new WelcomeFrame();
+                new WelcomeFrame(String String);
             } else {
                 msg.setText(login.returnLoginStatus(u, p));
             }
