@@ -1,18 +1,4 @@
-{
-  "messageID": "3525065342",
-  "recipient": "+27603500079",
-  "message": "Hi, sup?",
-  "hash": "35:2:HI,SUP?"
-}
-,
-  {
-    "messageID": "3700978358",
-    "recipient": "+27603500079",
-    "message": "ifrbgekdsnekjd",
-    "hash": "37:2:IFRBGEKDSNEKJDIFRBGEKDSNEKJD"
-  },
-{ "id":"3001912339", "recipient":"+27603500079", "message":"I want to eat your ass", "hash":"30:1:IASS" }
-{"id":"6765133246","recipient":"+27603500079","message":"hi suck diz nutz","hash":"67:0:HINUTZ"}
-{"id":"7632125973","recipient":"+27603500079","message":"hi suck diz nutz","hash":"76:1:HINUTZ"}
-{ "id":"1215423933", "recipient":"+27838968976", "message":"Hello", "hash":"12:5:HELLOHELLO" }
-{ "id":"7154616638", "recipient":"+27603500079", "message":"HWat do you mean", "hash":"71:1:HWATMEAN" }
+{ "id":"4292415511", "recipient":"+27834557896", "message":"Did you get the cake?", "hash":"42:1:DIDCAKE?" }
+{ "id":"4378782951", "recipient":"+27838884567", "message":"Where are you? You are late! I have asked you to be on time.", "hash":"43:2:WHERETIME." }
+{ "id":"3840282666", "recipient":"+27838884567", "message":"It is dinner time!", "hash":"38:4:ITTIME!" }
+{ "id":"7069453417", "recipient":"+27838884567", "message":"Ok, I am leaving without you.", "hash":"70:5:OK,YOU." }
